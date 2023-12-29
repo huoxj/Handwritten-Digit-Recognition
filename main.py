@@ -31,8 +31,10 @@ def init():
     net = network.AfflineNetwork([28 * 28, 800, 10], optimizer=om.Adam)
     return net
 def train(net, generation):
-    try:
-        for i in range(generation):
+    genePlot.clear()
+    lossPlot.clear()
+    for i in range(generation):
+        try:
             seed1 = int(time.time())    
             np.random.seed(seed1)
             np.random.shuffle(train_img)
@@ -45,8 +47,8 @@ def train(net, generation):
             net.compute()
             net.optimize()
             draw(i, net.get_loss())
-    except KeyboardInterrupt:
-        print("training stopped by ^c")
+        except KeyboardInterrupt:
+            print("training stopped by ^c")
     print("loss : {}".format(lossPlot[len(lossPlot) - 1]))
 def test(net):
     testCount = mnist.test_num
@@ -70,13 +72,39 @@ def test(net):
             accTrainCount += 1
     accuracy = accTrainCount / trainCount * 100
     print("Acc train : {:.2f}%".format(accuracy))
-def num_test(net):
-    nt = numericaltest.NumericalTest(net.graph, net.get_layers()[2].bias)
-    nt.message(True)
+def testSet(nets):
+    #vote test
+    testCount = mnist.test_num
+    trainCount = mnist.train_num
+    accTestCount, accTrainCount = 0, 0
+    for i in range(0, int(testCount)):
+        result = None
+        for net in nets:
+            net.set_input(test_img[i].T.reshape(28 * 28, 1))
+            net.set_label(test_label[i].reshape(10,1))
+            net.compute()
+            if result is None:
+                result = net.get_result()
+            else:
+                result += net.get_result()
+        if np.argmax(result) == np.argmax(test_label[i]):
+            accTestCount += 1
+    accuracy = accTestCount / testCount * 100
+    print("Acc test : {:.2f}%".format(accuracy))
 
+def single_net():
+    net = init()
+    train(net, 150)
+    test(net)
+def multi_net():
+    netCount = 10
+    nets = []
+    for i in range(netCount):
+        net = init()
+        nets.append(net)
+        print("Current in net {}".format(i))
+        train(net, 250)
+    testSet(nets)
 
 Load_mnist()
-net = init()
-train(net, 550)
-test(net)
-#num_test(net)
+multi_net()

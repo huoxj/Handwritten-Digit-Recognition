@@ -47,4 +47,3 @@ class NumericalTest:
             print(max(np.max(self.ad_grad / self.nd_grad), np.max(self.nd_grad / self.ad_grad)))
         else:
             print(abs(self.nd_grad - self.ad_grad))
-
