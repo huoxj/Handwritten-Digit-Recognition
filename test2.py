@@ -19,4 +19,3 @@ with open('temp.pickle','rb') as f:
     btys = pickle.load(f)
     data = pickle.loads(btys)
 print(type(data))
-#test
