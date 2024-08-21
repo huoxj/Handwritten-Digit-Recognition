@@ -28,7 +28,7 @@ def draw(gene, loss):
     plt.pause(0.001)
     plt.ioff()
 def init():
-    net = network.AfflineNetwork([28 * 28, 800, 10], optimizer=om.Adam)
+    net = network.AfflineNetwork([28 * 28, 200, 100, 10], optimizer=om.Adam)
     return net
 def train(net, generation):
     genePlot.clear()
@@ -97,13 +97,13 @@ def single_net():
     train(net, 150)
     test(net)
 def multi_net():
-    netCount = 10
+    netCount = 20
     nets = []
     for i in range(netCount):
         net = init()
         nets.append(net)
         print("Current in net {}".format(i))
-        train(net, 250)
+        train(net, 100)
     testSet(nets)
 
 Load_mnist()
